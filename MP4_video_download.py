@@ -1,6 +1,6 @@
 import requests
 import json
-
+import sys
 
 
 ###
@@ -14,10 +14,11 @@ session = requests.Session()
 # Enter your credentials
 username = ""
 password = ""
+api_key = ""
 
-if username == "" or password == "":
+if username == "" or password == "" or api_key == "":
     print("Please put in your credentials")
-    exit()
+    sys.exit()
 
 # Put in valid start time and endtime in EEN format.  
 # All times in our system are in the UTC timezone.
@@ -25,7 +26,11 @@ if username == "" or password == "":
 # (the last three digits are for microseconds)
 
 start_timestamp = ""
-end_timestamp = ""
+end_timestamp =   ""
+
+if start_timestamp == "" or end_timestamp == "":
+    print("Please put in a start and ending time")
+    sys.exit()
 
 
 # Translating the HTTP response codes to make the status messages easier to read
@@ -34,7 +39,10 @@ HTTP_STATUS_CODE = {
     202: 'ACCEPTED',
     400: 'Bad Request, please check what you are sending',
     401: 'User needs to Login first', 
-    403: 'User does not have access to that'
+    403: 'User does not have access to that',
+    500: 'API had a problem (500)',
+    502: 'API had a problem (502)',
+    503: 'API had a problem (503)'
     }
 
 
@@ -48,7 +56,7 @@ HTTP_STATUS_CODE = {
 url = "https://login.eagleeyenetworks.com/g/aaa/authenticate"
 
 payload = json.dumps({'username': username, 'password': password})
-headers = {'content-type': 'application/json'}
+headers = {'content-type': 'application/json', 'authorization': api_key }
 
 response = session.request("POST", url, data=payload, headers=headers)
 
@@ -65,8 +73,10 @@ url = "https://login.eagleeyenetworks.com/g/aaa/authorize"
 
 querystring = {"token": token}
 
-payload = ""
-response = session.request("POST", url, data=payload, params=querystring)
+payload = json.dumps({ 'token': token })
+headers = {'content-type': 'application/json', 'authorization': api_key }
+
+response = session.request("POST", url, data=payload, headers=headers)
 
 print("Step 2: %s" % HTTP_STATUS_CODE[response.status_code])
 
@@ -81,7 +91,8 @@ current_user = response.json()
 url = "https://login.eagleeyenetworks.com/g/device/list"
 
 payload = ""
-response = session.request("GET", url, data=payload)
+headers = {'authorization': api_key }
+response = session.request("GET", url, data=payload, headers=headers)
 
 print("Step 3: %s" % HTTP_STATUS_CODE[response.status_code])
 
@@ -101,7 +112,8 @@ url = "https://login.eagleeyenetworks.com/asset/list/video.flv"
 querystring = {"id": camera_id_list[0], "start_timestamp": start_timestamp, "end_timestamp": end_timestamp, "options": "coalesce"}
 
 payload = ""
-response = session.request("GET", url, data=payload, params=querystring)
+headers = {'authorization': api_key }
+response = session.request("GET", url, data=payload, params=querystring, headers=headers)
 
 print("Step 4: %s" % HTTP_STATUS_CODE[response.status_code])
 
@@ -120,7 +132,9 @@ url = "https://login.eagleeyenetworks.com/asset/play/video.mp4"
 querystring = {"id": camera_id_list[0], "start_timestamp": video_list[0]['s'], "end_timestamp": video_list[0]['e']}
 
 payload = ""
-response = session.request("GET", url, data=payload, params=querystring)
+headers = { 'authorization': api_key }
+
+response = session.request("GET", url, data=payload, params=querystring, headers=headers)
 
 print("Step 5: %s" % HTTP_STATUS_CODE[response.status_code])
 
