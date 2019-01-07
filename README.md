@@ -9,5 +9,5 @@ You can install all the required modules by running
 | File | Description |
 | :---  | :--- |
 | MP4\_video_download.py | Shows who to login, get list of cameras, pull video clip from first camera |
-|  List_bridges_in_sub_accounts.py | Prints out the bridge information for all bridges in all sub-accounts |
-
+| List_bridges_in_sub_accounts.py | Prints out the bridge information for all bridges in all sub-accounts |
+| Reseller_Camera_Monitor.py | Subscribes to status changes for every device in every sub-account |
