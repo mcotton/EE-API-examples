@@ -1,13 +1,30 @@
 # Eagle Eye Networks API Examples
 
+## Introduction
 This repo is for helping our Technology Partners understand how to use our API.  For more information please see our [API Documentation](https://apidocs.eagleeyenetworks.com/apidocs).
 
-You can install all the required modules by running
+
+## Installation
+You can install it locally by running
  `pip install -r requirements.txt`
+ 
+ `python <file>`
+
+Or you can run this inside of Docker
+
+`docker build --tag=APIexamples .`
+
+`docker run -it APIexamples`
+
+*make sure to edit the last line of `Dockerfile` to run the correct <file>*
+
+
+## Files
 
 
 | File | Description |
 | :---  | :--- |
 | MP4\_video_download.py | Shows who to login, get list of cameras, pull video clip from first camera |
-| List_bridges_in_sub_accounts.py | Prints out the bridge information for all bridges in all sub-accounts |
-| Reseller_Camera_Monitor.py | Subscribes to status changes for every device in every sub-account |
+| List\_bridges\_in\_sub\_accounts.py | Prints out the bridge information for all bridges in all sub-accounts |
+| Reseller\_Camera\_Monitor.py | Subscribes to status changes for every device in every sub-account |
+| Listen\_for\_thumbnails.py | Listen for thumbnail events using websockets to our poll stream |
