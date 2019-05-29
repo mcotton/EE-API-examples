@@ -12,9 +12,9 @@ You can install it locally by running
 
 Or you can run this inside of Docker
 
-`docker build --tag=APIexamples .`
+`docker build --tag=apiexamples .`
 
-`docker run -it APIexamples`
+`docker run -it apiexamples`
 
 *make sure to edit the last line of `Dockerfile` to run the correct <file>*
 
