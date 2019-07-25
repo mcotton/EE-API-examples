@@ -27,7 +27,7 @@ Or you can run this inside of Docker
 | MP4\_video_download.py | Shows how to login, get list of cameras, pull video clip from first camera |
 | Webhook\_video\_download.py | Same as above but uses prefect API to get webhooks when video is in the cloud |
 | List\_bridges\_in\_sub\_accounts.py | Prints out the bridge information for all bridges in all sub-accounts |
-| Reseller\_Camera\_Monitor.py | Subscribes to status changes for every device in every sub-account |
 | Listen\_for\_thumbnails.py | Listen for thumbnail events using websockets to our poll stream |
 | Listen\_for\_roi\_motion.py | Same as above but listening for ROI events |
+| Listen\_for\_status\_changes.py | Subscribes to status changes for an account, simplified version |
 | Preview_downloads.py | Downloads all preview images between time range |
