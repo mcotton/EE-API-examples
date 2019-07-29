@@ -2,7 +2,7 @@ import websocket
 import requests
 import json
 import sys
-
+import local_settings
 
 ###
 # Setup Information
@@ -18,8 +18,15 @@ password = ""
 api_key = ""
 
 if username == "" or password == "" or api_key == "":
-    print("Please put in your credentials")
-    sys.exit()
+    
+    # look to see if there are credentials in local_settings.py
+    username = local_settings.username
+    password = local_settings.password
+    api_key = local_settings.api_key
+
+    if username == "" or password == "" or api_key == "":
+        print("Please put in your credentials")
+        sys.exit()
 
 
 

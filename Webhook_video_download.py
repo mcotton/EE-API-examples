@@ -1,7 +1,7 @@
 import requests
 import json
 import sys
-
+import local_settings
 
 ###
 # Setup Information
@@ -17,8 +17,15 @@ password = ""
 api_key = ""
 
 if username == "" or password == "" or api_key == "":
-    print("Please put in your credentials")
-    sys.exit()
+    
+    # look to see if there are credentials in local_settings.py
+    username = local_settings.username
+    password = local_settings.password
+    api_key = local_settings.api_key
+
+    if username == "" or password == "" or api_key == "":
+        print("Please put in your credentials")
+        sys.exit()
 
 # Put in valid start time and endtime in EEN format.  
 # All times in our system are in the UTC timezone.
@@ -109,7 +116,7 @@ camera_id_list = [i[1] for i in device_list if i[3] == 'camera']
 # Step 4: get list of videos for a specific camera (needs camera_id, start_time, end_time)
 ###
 
-url = "https://login.eagleeyenetworks.com/asset/list/video.flv"
+url = "https://login.eagleeyenetworks.com/asset/list/video"
 
 querystring = {"id": camera_id_list[0], "start_timestamp": start_timestamp, "end_timestamp": end_timestamp, "options": "coalesce"}
 
@@ -136,8 +143,8 @@ for curr_video in video_list:
         "id": camera_id_list[0],
         "start_timestamp": curr_video['s'],
         "end_timestamp": curr_video['e'],
-        "success_hook": "", # remember to URL encode this string
-        "failure_hook": "" # remember to URL encode this string
+        "success_hook": "",
+        "failure_hook": ""
     }
 
     payload = ""

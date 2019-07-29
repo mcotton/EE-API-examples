@@ -16,7 +16,7 @@ Or you can run this inside of Docker
 
 `docker run -it apiexamples`
 
-*make sure to edit the last line of `Dockerfile` to run the correct <file>*
+*make sure to edit the last line of `Dockerfile` to run the correct file*
 
 
 ## Files
@@ -31,3 +31,4 @@ Or you can run this inside of Docker
 | Listen\_for\_roi\_motion.py | Same as above but listening for ROI events |
 | Listen\_for\_status\_changes.py | Subscribes to status changes for an account, simplified version |
 | Preview_downloads.py | Downloads all preview images between time range |
+| Output\_live\_stream\_URLs.py | format command to play live stream in VLC |

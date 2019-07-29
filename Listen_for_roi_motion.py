@@ -2,7 +2,7 @@ import websocket
 import requests
 import json
 import sys
-
+import local_settings
 
 ###
 # Setup Information
@@ -18,9 +18,15 @@ password = ""
 api_key = ""
 
 if username == "" or password == "" or api_key == "":
-    print("Please put in your credentials")
-    sys.exit()
+    
+    # look to see if there are credentials in local_settings.py
+    username = local_settings.username
+    password = local_settings.password
+    api_key = local_settings.api_key
 
+    if username == "" or password == "" or api_key == "":
+        print("Please put in your credentials")
+        sys.exit()
 
 
 # Translating the HTTP response codes to make the status messages easier to read
@@ -106,11 +112,6 @@ camera_id_list = [i[1] for i in device_list if (i[3] == 'camera' and i[0] != Non
 
 #To connect to the API we need to know the account ID. We can get that information
 #from the user object returned after a successful login in Step 2
-
-
-# resp = requests.get('https://login.eagleeyenetworks.com/g/account/list?A={}'.format(auth_key))
-# data= resp.json()
-# account_id = current_user['owner_account_id']
 
 
 auth_key = session.cookies.get_dict()['auth_key']
