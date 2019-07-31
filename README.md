@@ -18,6 +18,16 @@ Or you can run this inside of Docker
 
 *make sure to edit the last line of `Dockerfile` to run the correct file*
 
+The examples are now looking for local settings in a file named `local_settings.py`
+
+It should contain the following:
+
+```
+# Enter your credentials
+username = ""
+password = ""
+api_key = ""
+```
 
 ## Files
 
