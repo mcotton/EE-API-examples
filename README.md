@@ -18,6 +18,16 @@ Or you can run this inside of Docker
 
 *make sure to edit the last line of `Dockerfile` to run the correct file*
 
+The examples are now looking for local settings in a file named `local_settings.py`
+
+It should contain the following:
+
+```
+# Enter your credentials
+username = ""
+password = ""
+api_key = ""
+```
 
 ## Files
 
@@ -33,3 +43,4 @@ Or you can run this inside of Docker
 | Listen\_for\_status\_changes.py | Subscribes to status changes for an account, simplified version |
 | Preview_downloads.py | Downloads all preview images between time range |
 | Output\_live\_stream\_URLs.py | format command to play live stream in VLC |
+| testing_poll_events.py | Listens for camera connect/disconnet events |
