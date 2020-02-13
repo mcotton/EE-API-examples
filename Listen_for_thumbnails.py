@@ -146,7 +146,7 @@ while True:
     data = ws.recv()
     jdata = json.loads(data) #convert the json string to a python dictionary/array
     for device_id in jdata['data']:
-        print('{} has a new thumbnal at {}'.format(device_id, jdata['data'][device_id]['event']['PRTH']['timestamp']))
+        print('{} has a new thumbnail at {}'.format(device_id, jdata['data'][device_id]['event']['PRTH']['timestamp']))
 
 ws.close()
 
