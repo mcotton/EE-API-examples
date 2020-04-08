@@ -43,5 +43,6 @@ api_key = ""
 | Listen\_for\_roi\_motion.py | Same as above but listening for ROI events |
 | Listen\_for\_status\_changes.py | Subscribes to status changes for an account, simplified version |
 | Preview_downloads.py | Downloads all preview images between time range |
+| Preview_download_latest_per_camera.py | Downloads the latest preview images from each camera |
 | Output\_live\_stream\_URLs.py | format command to play live stream in VLC |
 | testing_poll_events.py | Listens for camera connect/disconnet events |
