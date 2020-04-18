@@ -34,15 +34,16 @@ api_key = ""
 
 | File | Description |
 | :---  | :--- |
-| MP4\_video_download.py | Shows how to login, get list of cameras, pull video clip from first camera |
+| MP4\_video\_download.py | Shows how to login, get list of cameras, pull video clip from first camera |
 | Webhook\_video\_download.py | Same as above but uses prefect API to get webhooks when video is in the cloud |
 | List\_bridges\_in\_sub\_accounts.py | Prints out the bridge information for all bridges in all sub-accounts |
 | List\_bridges\_and\_cameras\_in\_sub\_accounts.py | Prints out number of attached bridges and cameras in all sub-accounts |
 | Listen\_for\_previews.py | Listen for preview image events using websockets to our poll stream |
+| Listen\_for\_Camera\_Changes.py | Listen for camera settings change  events using websockets to our poll stream |
 | Listen\_for\_thumbnails.py | Listen for thumbnail events using websockets to our poll stream |
 | Listen\_for\_roi\_motion.py | Same as above but listening for ROI events |
 | Listen\_for\_status\_changes.py | Subscribes to status changes for an account, simplified version |
-| Preview_downloads.py | Downloads all preview images between time range |
-| Preview_download_latest_per_camera.py | Downloads the latest preview images from each camera |
+| Preview\_downloads.py | Downloads all preview images between time range |
+| Preview\_download\_latest\_per\_camera.py | Downloads the latest preview images from each camera |
 | Output\_live\_stream\_URLs.py | format command to play live stream in VLC |
-| testing_poll_events.py | Listens for camera connect/disconnet events |
+| testing\_poll\_events.py | Listens for camera connect/disconnet events |
