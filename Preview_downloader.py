@@ -30,12 +30,17 @@ if username == "" or password == "" or api_key == "":
 
 
 camera = ""
-
+if camera == "":
+    print("Please include a camera ESN")
+    sys.exit()
 
 # which folder should these prveviews download into?
 # using the folder name as a label for the images
 
-label = "open"
+label = ""
+if label == "":
+    print("Please include a directoy to download images to (and make sure it exists)")
+    sys.exit()
 
 
 # Put in valid start time and endtime in EEN format.  
