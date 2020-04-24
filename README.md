@@ -46,7 +46,8 @@ api_key = ""
 | Output\_live\_stream\_URLs.py | format URL to play live stream |
 | Output\_live\_stream\_URLs.py | format URL to play RTSP stream from camera |
 | Preview\_download\_latest\_per\_camera.py | Downloads the latest preview images from each camera |
-| Preview\_downloads.py | Downloads all preview images between time range |
+| Preview\_downloader.py | Downloads all preview images between time range |
+| Preview\_downloader\_in\_sub\_account.py | Downloads all preview images in a sub-account between time range |
 | testing\_poll\_events.py | Listens for camera connect/disconnet events |
 | Webhook\_video\_download.py | Same as above but uses prefect API to get webhooks when video is in the cloud |
 

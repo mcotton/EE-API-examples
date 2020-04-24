@@ -27,17 +27,22 @@ if username == "" or password == "" or api_key == "":
         print("Please put in your credentials")
         sys.exit()
 
-
-
-camera = "100d93f9"
+camera = ""
 if camera == "":
     print("Please include a camera ESN")
     sys.exit()
 
+
+subaccount = ""
+if subaccount == "":
+    print("Please include an Account ID")
+    sys.exit()
+
+
 # which folder should these prveviews download into?
 # using the folder name as a label for the images
 
-label = "handicap"
+label = ""
 if label == "":
     print("Please include a directoy to download images to (and make sure it exists)")
     sys.exit()
@@ -48,9 +53,8 @@ if label == "":
 # For example, November 21, 2018 01:23:45 AM would translate to 20181121012345.000
 # (the last three digits are for microseconds)
 
-
-start_timestamp = "20200423181209.793"
-end_timestamp =   "20200424180634.000"
+start_timestamp = ""
+end_timestamp = ""
 
 if start_timestamp == "" or end_timestamp == "":
     print("Please put in a start and ending time")
@@ -108,16 +112,45 @@ current_user = response.json()
 
 
 
-###
-# Step 3: get the one selected camrea
-###
+### 
+# Step 3: get list a sub-accounts 
+### 
+ 
+url = "https://login.eagleeyenetworks.com/g/account/list" 
+ 
+payload = "" 
+headers = {'authorization': api_key } 
+response = session.request("GET", url, data=payload, headers=headers) 
+ 
+print("Step 3: %s" % HTTP_STATUS_CODE[response.status_code]) 
+ 
+sub_account_list = response.json() 
+ 
+sub_account_id_list = [(i[0], i[1]) for i in sub_account_list if i[0] == subaccount] 
+ 
+ 
+### 
+# Step 4: switch into sub-account 
+### 
+ 
+for sub in sub_account_id_list: 
+ 
+    url = "https://login.eagleeyenetworks.com/g/aaa/switch_account" 
+ 
+    payload = { "account_id": sub[0] } 
+    headers = {'authorization': api_key } 
+    response = session.request("POST", url, data=payload, headers=headers) 
+    print("Switching to account: %s" % (sub[1])) 
+    print("Step 4: %s" % HTTP_STATUS_CODE[response.status_code]) 
+ 
+
 
 camera_id_list = [camera]
 
 
 
 ###
-# Step 4: get list of preview for a specific camera (needs camera_id, start_time, end_time)
+# Step 5: get list of preview for a specific camera (needs camera_id, start_time, end_time)
 ###
 
 url = "https://login.eagleeyenetworks.com/asset/list/image"
@@ -128,19 +161,14 @@ payload = ""
 headers = {'authorization': api_key }
 response = session.request("GET", url, data=payload, params=querystring, headers=headers)
 
-print("Step 4: %s" % HTTP_STATUS_CODE[response.status_code])
+print("Step 5: %s" % HTTP_STATUS_CODE[response.status_code])
 
 preview_list = response.json()
 
 
-import numpy as np
-preview_list = np.random.choice(preview_list, 1000)
-
-
 
 ###
-# Step 5: Download the video in MP4 format, returns the video if it is able to complete in ~30 seconds.
-# Returns JSON with job ID if it can not complete the request in 30 seconds.
+# Step 6: Download the preview images
 ###
 
 
@@ -157,7 +185,7 @@ for item in preview_list:
 
     response = session.request("GET", url, data=payload, params=querystring, headers=headers)
 
-    print("Step 5: %s" % HTTP_STATUS_CODE[response.status_code])
+    print("Step 6: %s" % HTTP_STATUS_CODE[response.status_code])
 
     if response.status_code == 200:
         # this is the actual media object, save to a file
@@ -172,7 +200,6 @@ for item in preview_list:
                     f.write(chunk)
 
     if response.status_code == 400:
-        # this is the job information, wait before requesting again
         print(url)
         print(querystring)
         print(response.json())
