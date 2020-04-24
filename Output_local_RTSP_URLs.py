@@ -2,6 +2,7 @@ import requests
 import json
 import sys
 import local_settings
+import local_settings
 
 ###
 # Setup Information
@@ -26,8 +27,6 @@ if username == "" or password == "" or api_key == "":
     if username == "" or password == "" or api_key == "":
         print("Please put in your credentials")
         sys.exit()
-
-
 
 
 # Translating the HTTP response codes to make the status messages easier to read
@@ -80,11 +79,12 @@ print("Step 2: %s" % HTTP_STATUS_CODE[response.status_code])
 current_user = response.json()
 
 
+
 ###
-# Step 3: get list a sub-accounts
+# Step 3: get list of devices
 ###
 
-url = "https://login.eagleeyenetworks.com/g/account/list"
+url = "https://login.eagleeyenetworks.com/g/device/list"
 
 payload = ""
 headers = {'authorization': api_key }
@@ -92,50 +92,33 @@ response = session.request("GET", url, data=payload, headers=headers)
 
 print("Step 3: %s" % HTTP_STATUS_CODE[response.status_code])
 
-sub_account_list = response.json()
+device_list = response.json()
 
-sub_account_id_list = [(i[0], i[1]) for i in sub_account_list if i[0] != current_user['owner_account_id']]
-
-
-
-###
-# Step 4: switch into sub-account
-###
-
-for sub in sub_account_id_list:
-
-    url = "https://login.eagleeyenetworks.com/g/aaa/switch_account"
-
-    payload = { "account_id": sub[0] }
-    headers = {'authorization': api_key }
-    response = session.request("POST", url, data=payload, headers=headers)
-    print("Switching to account: %s [%s]" % (sub[1], sub[0]))
-    # print("Step 4: %s" % HTTP_STATUS_CODE[response.status_code])
+# filter everything but the cameras
+camera_list = [i for i in device_list if i[3] == 'camera']
 
 
 ###
-# Step 5: get list of devices
+# Step 4: get RTSP URLs for each device 
 ###
 
-    url = "https://login.eagleeyenetworks.com/g/device/list"
+
+for cam in camera_list:
+
+    url = "https://login.eagleeyenetworks.com/g/device/rtsp?id=%s" % (cam[1])
 
     payload = ""
     headers = {'authorization': api_key }
     response = session.request("GET", url, data=payload, headers=headers)
-    
-    device_list = response.json()
+
+    # print("Step 4: %s" % HTTP_STATUS_CODE[response.status_code])
+
+    if cam[1] and response.json() and 'video_url' in response.json():
+        print("%s: %s" % (cam[2], response.json()['video_url']))
 
 
 
-    bridge_id_list = [{'id': i[1], 'name': i[2], 'status': i[10] } for i in device_list if i[3] == 'bridge' and i[15] == 0]
-    camera_id_list = [{'id': i[1], 'name': i[2], 'status': i[10] } for i in device_list if i[3] == 'camera' and i[5] == 'ATTD' and i[15] == 0]
 
-    print(" Bridges : %s" % len(bridge_id_list))
-    for bridge in bridge_id_list:
-        print("  - %s(%s) -> %s" % (bridge['name'], bridge['id'], bridge['status']))
-    
-    print(" Cameras [attached] : %s" % len(camera_id_list))
-    for camera in camera_id_list:
-        print("  - %s(%s) -> %s" % (camera['name'], camera['id'], camera['status']))
+
 
 

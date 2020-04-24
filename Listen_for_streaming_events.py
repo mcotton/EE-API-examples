@@ -1,3 +1,4 @@
+import websocket
 import requests
 import json
 import sys
@@ -26,6 +27,7 @@ if username == "" or password == "" or api_key == "":
     if username == "" or password == "" or api_key == "":
         print("Please put in your credentials")
         sys.exit()
+
 
 
 # Translating the HTTP response codes to make the status messages easier to read
@@ -94,21 +96,58 @@ print("Step 3: %s" % HTTP_STATUS_CODE[response.status_code])
 device_list = response.json()
 
 # filter everything but the cameras
-camera_list = [i for i in device_list if i[3] == 'camera']
-
-
+camera_id_list = [i[1] for i in device_list if (i[3] == 'camera' and i[0] != None)]
 
 
 ###
-# Step 4: get list of videos for a specific camera (needs camera_id, start_time, end_time)
+# Step 4: subscribe to websocket pollstream
+# listening for thumbnail events
 ###
 
-for cam in camera_list:
-    url = "https://%s.eagleeyenetworks.com/asset/play/video.flv?id=%s&start_timestamp=stream_%s&end_timestamp=%s&A=%s" \
-            % (current_user['active_brand_subdomain'], cam[1], current_user['id'], '%2B300000', session.cookies['auth_key'])
-    print("%s: \"%s\" " % (cam[2], url) )
+
+#Websockets are based on push events from the server. Establishing a websocket poll
+#connection to the Eagle Eye API will give you event updates as they happen in real
+#time. We will listen to event status changes for 10 seconds before exiting the 
+#application.
+
+#To connect to the API we need to know the account ID. We can get that information
+#from the user object returned after a successful login in Step 2
 
 
+# resp = requests.get('https://login.eagleeyenetworks.com/g/account/list?A={}'.format(auth_key))
+# data= resp.json()
+# account_id = current_user['owner_account_id']
+
+
+auth_key = session.cookies.get_dict()['auth_key']
+account_id = current_user['owner_account_id']
+
+#We create the websocket connection. Make sure we put in the auth_key in the HTTP
+#Cookie attribute instead of passing it as a query parameter (A= in previous calls.
+ws = websocket.WebSocket()
+ws.connect('wss://login.eagleeyenetworks.com/api/v2/Device/{}/Events'.format(account_id), cookie='auth_key={}'.format(auth_key))
+
+#Now that we have connected we need to send a JSON structure to tell the API what devices
+#and events we are listening for (https://apidocs.eagleeyenetworks.com/#websocket-polling)
+register_msg = { "cameras": {} }
+for d in camera_id_list:
+    register_msg['cameras'][d] = { 'resource': ['event'], 'event': ['CSAU', 'CSDU'] }
+    data = json.dumps(register_msg)
+
+#Send the register event data structure to the API
+print("Registering for status events {}".format(data))
+ws.send(data)
+
+#Now we continue to recieve information as the API will push
+#any new status changes for the cameras we have registered to
+#observe status change events.
+while True:
+    data = ws.recv()
+    jdata = json.loads(data) #convert the json string to a python dictionary/array
+    for device_id in jdata['data']:
+        print(jdata['data'])
+
+ws.close()
 
 
 

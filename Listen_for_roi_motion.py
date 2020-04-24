@@ -18,7 +18,7 @@ password = ""
 api_key = ""
 
 if username == "" or password == "" or api_key == "":
-    
+
     # look to see if there are credentials in local_settings.py
     username = local_settings.username
     password = local_settings.password
@@ -27,6 +27,7 @@ if username == "" or password == "" or api_key == "":
     if username == "" or password == "" or api_key == "":
         print("Please put in your credentials")
         sys.exit()
+
 
 
 # Translating the HTTP response codes to make the status messages easier to read
@@ -44,105 +45,100 @@ HTTP_STATUS_CODE = {
 
 
 
-###
-# Step 1: login (part 1)
-# make sure put in valid credentials
-###
 
-url = "https://login.eagleeyenetworks.com/g/aaa/authenticate"
+def bootstrap():
+    ###
+    # Step 1: login (part 1)
+    # make sure put in valid credentials
+    ###
 
-payload = json.dumps({'username': username, 'password': password})
-headers = {'content-type': 'application/json', 'authorization': api_key }
+    url = "https://login.eagleeyenetworks.com/g/aaa/authenticate"
 
-response = session.request("POST", url, data=payload, headers=headers)
+    payload = json.dumps({'username': username, 'password': password})
+    headers = {'content-type': 'application/json', 'authorization': api_key }
 
-print ("Step 1: %s" % HTTP_STATUS_CODE[response.status_code])
-token = response.json()['token']
+    response = session.request("POST", url, data=payload, headers=headers)
 
-
-
-###
-# Step 2: login (part 2)
-###
-
-url = "https://login.eagleeyenetworks.com/g/aaa/authorize"
-
-querystring = {"token": token}
-
-payload = json.dumps({ 'token': token })
-headers = {'content-type': 'application/json', 'authorization': api_key }
-
-response = session.request("POST", url, data=payload, headers=headers)
-
-print("Step 2: %s" % HTTP_STATUS_CODE[response.status_code])
-
-current_user = response.json()
+    print ("Step 1: %s" % HTTP_STATUS_CODE[response.status_code])
+    token = response.json()['token']
 
 
 
-###
-# Step 3: get list of devices
-###
+    ###
+    # Step 2: login (part 2)
+    ###
 
-url = "https://login.eagleeyenetworks.com/g/device/list"
+    url = "https://login.eagleeyenetworks.com/g/aaa/authorize"
 
-payload = ""
-headers = {'authorization': api_key }
-response = session.request("GET", url, data=payload, headers=headers)
+    querystring = {"token": token}
 
-print("Step 3: %s" % HTTP_STATUS_CODE[response.status_code])
+    payload = json.dumps({ 'token': token })
+    headers = {'content-type': 'application/json', 'authorization': api_key }
 
-device_list = response.json()
+    response = session.request("POST", url, data=payload, headers=headers)
 
-# filter everything but the cameras
-camera_id_list = [i[1] for i in device_list if (i[3] == 'camera' and i[0] != None)]
+    print("Step 2: %s" % HTTP_STATUS_CODE[response.status_code])
 
-
-
-###
-# Step 4: subscribe to websocket pollstream
-# listening for thumbnail events
-###
-
-
-#Websockets are based on push events from the server. Establishing a websocket poll
-#connection to the Eagle Eye API will give you event updates as they happen in real
-#time. We will listen to event status changes for 10 seconds before exiting the 
-#application.
-
-#To connect to the API we need to know the account ID. We can get that information
-#from the user object returned after a successful login in Step 2
-
-
-auth_key = session.cookies.get_dict()['auth_key']
-account_id = current_user['owner_account_id']
-
-#We create the websocket connection. Make sure we put in the auth_key in the HTTP
-#Cookie attribute instead of passing it as a query parameter (A= in previous calls.
-ws = websocket.WebSocket()
-ws.connect('wss://login.eagleeyenetworks.com/api/v2/Device/{}/Events'.format(account_id), cookie='auth_key={}'.format(auth_key))
-
-#Now that we have connected we need to send a JSON structure to tell the API what devices
-#and events we are listening for (https://apidocs.eagleeyenetworks.com/#websocket-polling)
-register_msg = { "cameras": {} }
-for d in camera_id_list:
-    register_msg['cameras'][d] = { 'resource': ['event'], 'event': ['ROMS', 'ROMU', 'ROME'] }
-    data = json.dumps(register_msg)
-
-#Send the register event data structure to the API
-print("Registering for status events {}".format(data))
-ws.send(data)
-
-#Now we continue to recieve information as the API will push
-#any new status changes for the cameras we have registered to
-#observe status change events.
-while True:
-    data = ws.recv()
-    jdata = json.loads(data) #convert the json string to a python dictionary/array
-    for device_id in jdata['data']:
-        print(jdata['data'][device_id])
-
-ws.close()
+    current_user = response.json()
 
 
 
+    ###
+    # Step 3: get list of devices
+    ###
+
+    url = "https://login.eagleeyenetworks.com/g/device/list"
+
+    payload = ""
+    headers = {'authorization': api_key }
+    response = session.request("GET", url, data=payload, headers=headers)
+
+    print("Step 3: %s" % HTTP_STATUS_CODE[response.status_code])
+
+    device_list = response.json()
+
+    # filter everything but the cameras
+    camera_id_list = [i[1] for i in device_list if (i[3] == 'camera' and i[0] != None)]
+
+
+    def on_message(ws, data):
+        print("received a new message: ", data)
+            
+    def on_error(ws, error):
+        print("### on_error handler ###")
+        print(error)    
+    
+    def on_close(ws):
+        print("### on_close handler ###")
+        bootstrap()
+    
+    def on_open(ws):
+        # Now that we have connected we need to send a JSON structure to tell the API what devices
+        # and events we are listening for (https://apidocs.eagleeyenetworks.com/#websocket-polling)
+        register_msg = { "cameras": {} }
+        for d in camera_id_list:
+            register_msg['cameras'][d] = { 'resource': ['event'], 'event': ['ROMS', 'ROMU', 'ROME'] }
+            data = json.dumps(register_msg)
+        print("Registering for status events")
+        ws.send(data)
+
+
+    auth_key = session.cookies.get_dict()['auth_key']
+    account_id = current_user['owner_account_id']
+
+
+    # Open websocket and attach callback handlers
+    ws = websocket.WebSocketApp('wss://login.eagleeyenetworks.com/api/v2/Device/{}/Events'.format(account_id), cookie='auth_key={}'.format(auth_key),
+                                  on_message = on_message,
+                                  on_error = on_error,
+                                  on_close = on_close,
+                                  )
+
+    
+    # Open the websocket and run forever
+    ws.on_open = on_open
+    ws.run_forever()
+
+
+if __name__ == '__main__':
+    bootstrap()
