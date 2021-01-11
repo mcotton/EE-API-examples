@@ -38,6 +38,7 @@ api_key = ""
 | List\_bridges\_and\_cameras\_in\_sub\_accounts.py | Prints out number of attached bridges and cameras in all sub-accounts |
 | Listen\_for\_Camera\_Changes.py | Listen for camera settings change events using websockets to our poll stream |
 | Listen\_for\_previews.py | Listen for preview image events using websockets to our poll stream |
+| Listen\_for\_previews_long_polling.py | Listen for preview image events using long pollng to our poll stream |
 | Listen\_for\_roi\_motion.py | Same as above but listening for ROI events |
 | Listen\_for\_thumbnails.py | Listen for thumbnail events using websockets to our poll stream |
 | Listen\_for\_status\_changes.py | Subscribes to status changes for an account, simplified version |
