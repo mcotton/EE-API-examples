@@ -11,4 +11,4 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-CMD [ "python", "script.py"]
+CMD [ "python", "Listen_for_thumbnails.py"]

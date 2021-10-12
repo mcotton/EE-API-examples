@@ -40,6 +40,7 @@ api_key = ""
 | List\_bridges\_in\_sub\_accounts.py | Prints out the bridge information for all bridges in all sub-accounts |
 | List\_bridges\_and\_cameras\_in\_sub\_accounts.py | Prints out number of attached bridges and cameras in all sub-accounts |
 | List\_camera\_live\_stream\_URLs.py | format URL to play live stream |
+| Listen\_for\_thumbnails.py | subscribe to poll stream and listen for new thumbnails |
 
 ### Files that need to be updated ###
 
