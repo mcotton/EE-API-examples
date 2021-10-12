@@ -108,16 +108,10 @@ camera_id_list = [i[1] for i in device_list if (i[3] == 'camera' and i[0] != Non
 
 #Websockets are based on push events from the server. Establishing a websocket poll
 #connection to the Eagle Eye API will give you event updates as they happen in real
-#time. We will listen to event status changes for 10 seconds before exiting the 
-#application.
+#time. 
 
 #To connect to the API we need to know the account ID. We can get that information
 #from the user object returned after a successful login in Step 2
-
-
-# resp = requests.get('https://login.eagleeyenetworks.com/g/account/list?A={}'.format(auth_key))
-# data= resp.json()
-# account_id = current_user['owner_account_id']
 
 
 auth_key = session.cookies.get_dict()['auth_key']
